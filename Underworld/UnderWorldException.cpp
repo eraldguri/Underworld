@@ -1,0 +1,39 @@
+#include "UnderworldException.h"
+#include <sstream>
+
+UnderWorldException::UnderWorldException(int line, const char* file) noexcept : line(line), file(file)
+{
+
+}
+
+const char* UnderWorldException::what() const noexcept
+{
+	std::ostringstream oss;
+	oss << GetType() << std::endl
+		<< GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* UnderWorldException::GetType() const noexcept
+{
+	return "Underworld Exception";
+}
+
+int UnderWorldException::GetLine() const noexcept
+{
+	return line;
+}
+
+const std::string& UnderWorldException::GetFile() const noexcept
+{
+	return file;
+}
+
+std::string UnderWorldException::GetOriginString() const noexcept
+{
+	std::ostringstream oss;
+	oss << "[File] " << file << std::endl
+		<< "[Line] " << line;
+	return oss.str();
+}
