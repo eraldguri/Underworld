@@ -31,5 +31,6 @@ private:
 
 	static BOOL Is64BitWindows();
 	static DWORDLONG  GetTotalPhysicalMemory();
+
 };
 

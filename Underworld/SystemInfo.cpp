@@ -513,3 +513,4 @@ DWORDLONG SystemInfo::GetTotalPhysicalMemory()
 
     return MemoryStatus.ullTotalPhys / 1073741824;
 }
+
