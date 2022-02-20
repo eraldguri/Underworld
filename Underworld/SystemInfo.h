@@ -7,6 +7,9 @@
 #pragma comment(lib, "netapi32.lib")
 
 #include <shlwapi.h>
+#include "CpuInfo.h"
+#include <strsafe.h>
+#include <stdlib.h>
 
 constexpr int NUM_PAGES = 2;
 
@@ -32,5 +35,18 @@ private:
 	static BOOL Is64BitWindows();
 	static DWORDLONG  GetTotalPhysicalMemory();
 
+protected:
+	/*
+	* Monitors the CPU usage on regular intervals.
+	*/
+	static DWORD WINAPI WatchThreadProc(LPVOID lpParam);
+
+	/*
+	* Does nothing but a thread to consume CPU cycles.
+	* A volatile automatic variable is used for this purpose.
+	*/
+	static DWORD WINAPI ConsumeThreadProc(LPVOID lpParam);
+
+	static int TestCPUUsage(int percent);
 };
 

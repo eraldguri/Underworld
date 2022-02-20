@@ -3,7 +3,14 @@
 #include <string>
 #include "resource.h"
 
-constexpr int BYTES_TO_KB = 1024;
+constexpr int MAX_NUM_THREADS = 8;
+constexpr int MAX_CPU_USAGE_PERCENT = 100;
+constexpr int BUFFER_SIZE = 255;
+
+HANDLE hLoadingThreads[MAX_NUM_THREADS];
+HANDLE hWatchingThreads = INVALID_HANDLE_VALUE;
+ULONGLONG ullCounter = UINT_MAX;
+CpuInfo::CpuUsage cpuUsage;
 
 char* SystemInfo::GetComputerDetails()
 {
@@ -237,6 +244,7 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
                 }
             }
            
+            //TestCPUUsage(10);
 
         } break;
     }
@@ -512,5 +520,80 @@ DWORDLONG SystemInfo::GetTotalPhysicalMemory()
     GlobalMemoryStatusEx(&MemoryStatus);
 
     return MemoryStatus.ullTotalPhys / 1073741824;
+}
+
+DWORD __stdcall SystemInfo::WatchThreadProc(LPVOID lpParam)
+{
+    while (true)
+    {
+        MessageBox(NULL, "CPU Usage: " + cpuUsage.GetUsage(), "CPU" + cpuUsage.GetUsage(), MB_ICONEXCLAMATION);
+        Sleep(CpuInfo::APP_TICKS_INTERVAL);
+    }
+}
+
+DWORD __stdcall SystemInfo::ConsumeThreadProc(LPVOID lpParam)
+{
+    volatile ULONGLONG accum = 0;
+    while (true)
+    {
+        ++accum;
+    }
+
+    return 0;
+}
+
+int SystemInfo::TestCPUUsage(int percent)
+{
+    int iNumProcessors, iCPUUsagePercent, iNumThreads;
+    SYSTEM_INFO SysInfo;
+    int i;
+    for (i = 0; i < MAX_NUM_THREADS; ++i)
+    {
+        hLoadingThreads[i] = INVALID_HANDLE_VALUE;
+
+        // Obtaining the number of logical processors
+        GetSystemInfo(&SysInfo);
+        iNumProcessors = SysInfo.dwNumberOfProcessors;
+
+        // Obtaining the CPU Load requested, and abort if it is not valid.
+        iCPUUsagePercent = percent;
+        if ((iCPUUsagePercent <= 0) || (iCPUUsagePercent > MAX_CPU_USAGE_PERCENT))
+        {
+            MessageBox(NULL, "Please provide an integer between 0 and %d for CPU usage percent.", "int " + MAX_CPU_USAGE_PERCENT, MB_ICONEXCLAMATION);
+            return 1;
+        }
+
+        // Start appropriate number of threads to consume the processor cycles.
+        iNumThreads = (iCPUUsagePercent * iNumProcessors) / 100;
+        MessageBox(NULL, iNumThreads + " threads are needed while there are ",  iNumProcessors + " logical processors available.", MB_ICONEXCLAMATION);
+
+        for (i = 0; i < iNumThreads; ++i)
+        {
+            hLoadingThreads[i] = CreateThread(NULL, 0, ConsumeThreadProc, &ullCounter, 0, NULL);
+            if (hLoadingThreads[i] == NULL)
+            {
+                MessageBox(NULL, "Failure when creating the %dth thread.", "index " + i, MB_ICONEXCLAMATION);
+                return 1;
+            }
+        }
+
+        //Start the watching thread to watch the processor
+        hWatchingThreads = CreateThread(NULL, 0, WatchThreadProc, NULL, 0, NULL);
+        while (true)
+        {
+            Sleep(CpuInfo::APP_TICKS_INTERVAL);
+        }
+
+        // Clean up
+        for (i = 0; i < iNumThreads; ++i)
+        {
+            CloseHandle(hLoadingThreads[i]);
+            hLoadingThreads[i] = INVALID_HANDLE_VALUE;
+        }
+        CloseHandle(hWatchingThreads);
+        hWatchingThreads = INVALID_HANDLE_VALUE;
+    }
+
+    return 0;
 }
 
