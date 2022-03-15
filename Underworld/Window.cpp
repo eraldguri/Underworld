@@ -7,6 +7,14 @@
 #include "resource.h"
 #include "SystemInfo.h"
 
+// Enable visual styles
+#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+// Toolbar defines
+#define IDM_NEW 100
+#define IDM_OPEN 101
+#define IDM_SAVE 102
+
 Window::WindowClass Window::WindowClass::m_windowClass;
 
 Window::WindowClass::WindowClass() noexcept : m_hInstance(GetModuleHandle(nullptr))
@@ -80,6 +88,97 @@ std::optional<int> Window::ProcessMessages()
 	return {};
 }
 
+HWND Window::CreateToolbar(HWND hwndParent)
+{
+	// Declare and initialize local constants.
+	const int ImageListID = 0;
+	const int numButtons = 3;
+	const int bitmapSize = 16;
+
+	const DWORD buttonStyles = BTNS_AUTOSIZE;
+
+	// Create the toolbar.
+	HWND hWndToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL,
+		WS_CHILD | TBSTYLE_WRAPABLE, 0, 0, 0, 0,
+		hwndParent, NULL, GetModuleHandle(NULL), NULL);
+
+	if (hWndToolbar == NULL)
+		return NULL;
+
+	// Create the image list.
+	HIMAGELIST hImageList = ImageList_Create(bitmapSize, bitmapSize,   // Dimensions of individual bitmaps.
+		ILC_COLOR16 | ILC_MASK,   // Ensures transparent background.
+		numButtons, 0);
+
+	// Set the image list.
+	SendMessage(hWndToolbar, TB_SETIMAGELIST,
+		(WPARAM)ImageListID,
+		(LPARAM)hImageList);
+
+	// Load the button images.
+	SendMessage(hWndToolbar, TB_LOADIMAGES,
+		(WPARAM)IDB_STD_SMALL_COLOR,
+		(LPARAM)HINST_COMMCTRL);
+
+	// Initialize button info.
+	// IDM_NEW, IDM_OPEN, and IDM_SAVE are application-defined command constants.
+
+	TBBUTTON tbButtons[numButtons] =
+	{
+		{ MAKELONG(STD_FILENEW,  ImageListID), IDM_NEW,  TBSTATE_ENABLED, buttonStyles, {0}, 0, (INT_PTR)L"New" },
+		{ MAKELONG(STD_FILEOPEN, ImageListID), IDM_OPEN, TBSTATE_ENABLED, buttonStyles, {0}, 0, (INT_PTR)L"Open"},
+		{ MAKELONG(STD_FILESAVE, ImageListID), IDM_SAVE, 0,               buttonStyles, {0}, 0, (INT_PTR)L"Save"}
+	};
+
+	// Add buttons.
+	SendMessage(hWndToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+	SendMessage(hWndToolbar, TB_ADDBUTTONS, (WPARAM)numButtons, (LPARAM)&tbButtons);
+
+	// Resize the toolbar, and then show it.
+	SendMessage(hWndToolbar, TB_AUTOSIZE, 0, 0);
+	ShowWindow(hWndToolbar, TRUE);
+}
+
+HWND Window::CreateSimpleRebar(HWND hwndParent, HWND hwndToolbar) {
+	// Check parameters.
+	if (!hwndParent || !hwndToolbar)
+		return NULL;
+
+	// Create the rebar.
+	HWND hwndRebar = CreateWindowEx(WS_EX_TOOLWINDOW,
+		REBARCLASSNAME, NULL,
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		RBS_VARHEIGHT | CCS_NODIVIDER | RBS_BANDBORDERS,
+		0, 0, 0, 0,
+		hwndParent, NULL, GetModuleHandle(NULL), NULL);
+
+	if (!hwndRebar)
+		return NULL;
+
+	// Get the height of the toolbar.
+	DWORD dwBtnSize = (DWORD)SendMessage(hwndToolbar, TB_GETBUTTONSIZE, 0, 0);
+
+	REBARBANDINFO rbBand;
+	rbBand.cbSize = sizeof(REBARBANDINFO);
+	rbBand.fMask =
+		RBBIM_STYLE       // fStyle is valid.
+		| RBBIM_TEXT        // lpText is valid.
+		| RBBIM_CHILD       // hwndChild is valid.
+		| RBBIM_CHILDSIZE   // child size members are valid.
+		| RBBIM_SIZE;       // cx is valid
+	rbBand.fStyle = RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS;
+	rbBand.lpText = (LPSTR)_T("");
+	rbBand.hwndChild = hwndToolbar;
+	rbBand.cyChild = LOWORD(dwBtnSize);
+	rbBand.cxMinChild = 3 * HIWORD(dwBtnSize);
+	rbBand.cyMinChild = LOWORD(dwBtnSize);
+	rbBand.cx = 0;  // The default width is the width of the buttons.
+
+	// Add the band with the toolbar.
+	SendMessage(hwndRebar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbBand);
+	return hwndRebar;
+}
+
 LRESULT Window::HandleMessageSetup(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	if (uMessage == WM_NCCREATE)
@@ -105,6 +204,12 @@ LRESULT Window::HandleMessages(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM l
 
 	switch (uMessage)
 	{
+		case WM_CREATE:
+		{
+			HWND hwndToolbar = CreateToolbar(hWnd);
+			CreateSimpleRebar(hWnd, hwndToolbar);
+		} break;
+
 		case WM_CLOSE:
 		{
 			PostQuitMessage(0);

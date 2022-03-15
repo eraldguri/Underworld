@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iomanip>
 
-App::App() : window(1800, 800, "UNDERWORLD")
+App::App() : window(800, 800, "UNDERWORLD")
 {
 	
 }

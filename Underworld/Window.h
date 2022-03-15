@@ -42,6 +42,9 @@ public:
 	Window& operator=(const Window&) = delete;
 	~Window();
 	static std::optional<int> ProcessMessages();
+
+	HWND CreateToolbar(HWND hwndParent);
+	HWND CreateSimpleRebar(HWND hwndParent, HWND hwndToolbar);
 private:
 	static LRESULT CALLBACK HandleMessageSetup(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK HandleMessageThunk(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
