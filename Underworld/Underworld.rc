@@ -141,6 +141,10 @@ BEGIN
     BEGIN
         MENUITEM "System Information",          ID_MYCOMPUTER_SYSTEMINFORMATION
     END
+    POPUP "Tasks"
+    BEGIN
+        MENUITEM "New Task",                    ID_TASKS_NEWTASK
+    END
 END
 
 #endif    // English (United States) resources

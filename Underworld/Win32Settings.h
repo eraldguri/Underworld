@@ -17,3 +17,8 @@
 #else /* _UNICODE */
 #define _T(x)      x
 #endif /* _UNICODE */
+
+#include <CommCtrl.h>
+#include <string>
+#include <lm.h>
+#pragma comment(lib, "netapi32.lib")
