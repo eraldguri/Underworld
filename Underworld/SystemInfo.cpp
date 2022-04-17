@@ -204,6 +204,9 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
                 wsprintf(szBuffer, "Failed: %d", GetLastError());
             }
 
+            char* kernelVersion = new char[GetNtDllVersion().length() + 1];
+            std::strcpy(kernelVersion, GetNtDllVersion().c_str());
+
             const char* systemType;
             if (Is64BitWindows())
             {
@@ -226,6 +229,7 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
             const char* thirdRow[2]         = { "OS Manufacturer", szBuffer };
             const char* fourthRow[2]        = { "System Type", systemType };
             const char* fifthRow[2]         = { "Available Physical Memory",  memory };
+            const char* sixthRow[2]         = { "Kernel Version", kernelVersion };
 
             for (int i = 0; i < iColumnsToInsert; ++i)
             {
@@ -241,6 +245,7 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
                     InsertListViewItems(hListView, 2, i, i == 0 ? 0 : 1, const_cast<char*>(thirdRow[i]));
                     InsertListViewItems(hListView, 3, i, i == 0 ? 0 : 1, const_cast<char*>(fourthRow[i]));
                     InsertListViewItems(hListView, 4, i, i == 0 ? 0 : 1, const_cast<char*>(fifthRow[i]));
+                    InsertListViewItems(hListView, 5, i, i == 0 ? 0 : 1, const_cast<char*>(sixthRow[i]));
                 }
             }
            
@@ -540,6 +545,47 @@ DWORDLONG SystemInfo::GetTotalPhysicalMemory()
     GlobalMemoryStatusEx(&MemoryStatus);
 
     return MemoryStatus.ullTotalPhys / 1073741824;
+}
+
+std::string SystemInfo::GetNtDllVersion()
+{
+    std::string VersionString;
+    DWORD dwFolder;
+    char SystemFolderPath[_MAX_PATH + 1];
+    UINT SystemFolderPathSize = GetSystemDirectory(SystemFolderPath, _MAX_PATH);
+    if (SystemFolderPathSize > 0)
+    {
+        std::string ntDllPath(SystemFolderPath, SystemFolderPathSize);
+        ntDllPath += "\\ntoskrnl.exe";
+        DWORD dwVersionSize = GetFileVersionInfoSizeA(ntDllPath.c_str(), &dwFolder);
+        if (dwVersionSize > 0)
+        {
+            LPVOID lpDataPtr = malloc(dwVersionSize);
+            if (lpDataPtr != NULL)
+            {
+                if (GetFileVersionInfo(ntDllPath.c_str(), 0, dwVersionSize, lpDataPtr))
+                {
+                    UINT uLength;
+                    LPVOID lpOutputPtr;
+                    if (VerQueryValue(lpDataPtr, "\\", &lpOutputPtr, &uLength))
+                    {
+                        VS_FIXEDFILEINFO* VersionStructPtr = reinterpret_cast<VS_FIXEDFILEINFO*>(lpOutputPtr);
+                        if (VersionStructPtr->dwSignature == 0xFEEF04BD)
+                        {
+                            VersionString = std::to_string(HIWORD(VersionStructPtr->dwFileVersionMS));
+                            VersionString = std::to_string(LOWORD(VersionStructPtr->dwFileVersionMS));
+
+                            VersionString = std::to_string(HIWORD(VersionStructPtr->dwFileVersionLS));
+                            VersionString = std::to_string(LOWORD(VersionStructPtr->dwFileVersionLS));
+                            VersionString += ".";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return VersionString;
 }
 
 DWORD __stdcall SystemInfo::WatchThreadProc(LPVOID lpParam)

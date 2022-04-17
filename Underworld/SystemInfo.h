@@ -11,6 +11,9 @@
 #include <strsafe.h>
 #include <stdlib.h>
 
+#include <winver.h>
+#pragma comment(lib, "Version.lib")
+
 constexpr int NUM_PAGES = 2;
 
 class SystemInfo
@@ -35,6 +38,8 @@ private:
 	static BOOL Is64BitWindows();
 
 	static DWORDLONG GetTotalPhysicalMemory();
+
+	static std::string GetNtDllVersion();
 
 protected:
 	/*
