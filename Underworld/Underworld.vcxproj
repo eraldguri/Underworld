@@ -159,7 +159,6 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="SystemInfo.cpp" />
-    <ClCompile Include="SystenInfo.cpp" />
     <ClCompile Include="TimeWrapper.cpp" />
     <ClCompile Include="UnderWorldException.cpp" />
     <ClCompile Include="Window.cpp" />

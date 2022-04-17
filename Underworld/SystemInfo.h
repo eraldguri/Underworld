@@ -33,7 +33,8 @@ private:
 	static UINT GetComputerManufacturer(LPSTR lpBuffer, UINT uSize);
 
 	static BOOL Is64BitWindows();
-	static DWORDLONG  GetTotalPhysicalMemory();
+
+	static DWORDLONG GetTotalPhysicalMemory();
 
 protected:
 	/*

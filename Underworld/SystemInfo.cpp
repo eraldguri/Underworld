@@ -384,6 +384,26 @@ const std::string SystemInfo::GetWindowVersionString()
         windowsVersion += servicePack;
     }
 
+    if (strlen(osver.szCSDVersion) > 0)
+    {
+        windowsVersion += " ";
+        windowsVersion += osver.szCSDVersion;
+    }
+
+    windowsVersion += " (Build " + std::to_string((int)osver.dwBuildNumber) + ")";
+
+    if (osver.dwMajorVersion >= 6)
+    {
+        if (SystemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+        {
+            windowsVersion += ", 64-bit";
+        }
+        else if (SystemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL)
+        {
+            windowsVersion += ", 32-bit";
+        }
+    }
+
     return windowsVersion;
 
 }
