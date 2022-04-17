@@ -14,6 +14,8 @@
 #include <winver.h>
 #pragma comment(lib, "Version.lib")
 
+#include <winnls.h>
+
 constexpr int NUM_PAGES = 2;
 
 class SystemInfo
@@ -40,6 +42,8 @@ private:
 	static DWORDLONG GetTotalPhysicalMemory();
 
 	static std::string GetNtDllVersion();
+
+	static std::string GetLanguage();
 
 };
 

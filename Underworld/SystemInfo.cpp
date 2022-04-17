@@ -207,6 +207,9 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
             char* kernelVersion = new char[GetNtDllVersion().length() + 1];
             std::strcpy(kernelVersion, GetNtDllVersion().c_str());
 
+            char* language = new char[GetLanguage().length() + 1];
+            std::strcpy(language, GetLanguage().c_str());
+
             const char* systemType;
             if (Is64BitWindows())
             {
@@ -230,6 +233,7 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
             const char* fourthRow[2]        = { "System Type", systemType };
             const char* fifthRow[2]         = { "Available Physical Memory",  memory };
             const char* sixthRow[2]         = { "Kernel Version", kernelVersion };
+            const char* languafeRow[2]      = { "Language", language };
 
             for (int i = 0; i < iColumnsToInsert; ++i)
             {
@@ -246,10 +250,9 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
                     InsertListViewItems(hListView, 3, i, i == 0 ? 0 : 1, const_cast<char*>(fourthRow[i]));
                     InsertListViewItems(hListView, 4, i, i == 0 ? 0 : 1, const_cast<char*>(fifthRow[i]));
                     InsertListViewItems(hListView, 5, i, i == 0 ? 0 : 1, const_cast<char*>(sixthRow[i]));
+                    InsertListViewItems(hListView, 6, i, i == 0 ? 0 : 1, const_cast<char*>(languafeRow[i]));
                 }
             }
-           
-            //TestCPUUsage(10);
 
         } break;
     }
@@ -585,4 +588,33 @@ std::string SystemInfo::GetNtDllVersion()
     }
 
     return VersionString;
+}
+
+std::string SystemInfo::GetLanguage()
+{
+    std::string LanguageString;
+    char UserDefaultUILanguage = GetUserDefaultUILanguage();
+    char SystemDefaultUILanguage = GetSystemDefaultUILanguage();
+    int UserDefaultLangID = GetUserDefaultLangID();
+    int SystemDefaultLangID = GetSystemDefaultLangID();
+    int UserDefaultLCID = GetUserDefaultLCID();
+    int SystemDefaultLCID = GetSystemDefaultLCID();
+
+    char buffer[100];
+    LCID lcid = UserDefaultLCID;
+
+    if (GetLocaleInfo(lcid, LOCALE_ILANGUAGE, buffer, 100))
+    {
+        LanguageString = buffer;
+    }
+    if (GetLocaleInfo(lcid, LOCALE_SENGLANGUAGE, buffer, 100))
+    {
+        LanguageString = buffer;
+    }
+    if (GetLocaleInfo(lcid, LOCALE_SISO639LANGNAME, buffer, 100))
+    {
+        LanguageString = buffer;
+    }
+
+    return LanguageString;
 }
