@@ -39,8 +39,6 @@ private:
 
 	static BOOL Is64BitWindows();
 
-	static DWORDLONG GetTotalPhysicalMemory();
-
 	static std::string GetNtDllVersion();
 
 	static std::string GetLanguage();

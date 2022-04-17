@@ -2,6 +2,7 @@
 #include <wchar.h>
 #include <string>
 #include "resource.h"
+#include "MemoryInfo.h"
 
 constexpr int MAX_NUM_THREADS = 8;
 constexpr int MAX_CPU_USAGE_PERCENT = 100;
@@ -210,6 +211,25 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
             char* language = new char[GetLanguage().length() + 1];
             std::strcpy(language, GetLanguage().c_str());
 
+            MemoryInfo* memoryInfo = new MemoryInfo();
+            char* totalRam = new char[memoryInfo->GetTotalRam().length() + 1];
+            std::strcpy(totalRam, memoryInfo->GetTotalRam().c_str());
+
+            char* availableRam = new char[memoryInfo->GetAvailableRam().length() + 1];
+            std::strcpy(availableRam, memoryInfo->GetAvailableRam().c_str());
+
+            char* totalPageFile = new char[memoryInfo->GetTotalPageFile().length() + 1];
+            std::strcpy(totalPageFile, memoryInfo->GetTotalPageFile().c_str());
+
+            char* availablePageFile = new char[memoryInfo->GetAvailablePageFile().length() + 1];
+            std::strcpy(availablePageFile, memoryInfo->GetAvailablePageFile().c_str());
+
+            char* totalVirtualMemory = new char[memoryInfo->GetTotalVirtualMemory().length() + 1];
+            std::strcpy(totalVirtualMemory, memoryInfo->GetTotalVirtualMemory().c_str());
+
+            char* availableVirtualMemory = new char[memoryInfo->GetAvailableVirtualMemory().length() + 1];
+            std::strcpy(availableVirtualMemory, memoryInfo->GetAvailableVirtualMemory().c_str());
+
             const char* systemType;
             if (Is64BitWindows())
             {
@@ -220,20 +240,19 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
                 systemType = "x86-based PC";
             }
 
-            const DWORD dwMBFactor = 0x00100000;
-            DWORDLONG dwTotalPhys = GetTotalPhysicalMemory();
-            std::string physicalMemory = std::to_string(GetTotalPhysicalMemory()) + " GB";
-            char* memory = new char[physicalMemory.length() + 1];
-            std::strcpy(memory, physicalMemory.c_str());
-
-            const char* sListColumnText[2]  = {"Item", "Value"};
-            const char* sFirstRow[2]        = { "OS Name ", windowsVersion };
-            const char* sSecondRow[2]       = { "Computer Name", GetComputerDetails()};
-            const char* thirdRow[2]         = { "OS Manufacturer", szBuffer };
-            const char* fourthRow[2]        = { "System Type", systemType };
-            const char* fifthRow[2]         = { "Available Physical Memory",  memory };
-            const char* sixthRow[2]         = { "Kernel Version", kernelVersion };
-            const char* languafeRow[2]      = { "Language", language };
+            const char* sListColumnText[2]          = {"Item", "Value"};
+            const char* sFirstRow[2]                = { "OS Name ", windowsVersion };
+            const char* sSecondRow[2]               = { "Computer Name", GetComputerDetails()};
+            const char* thirdRow[2]                 = { "OS Manufacturer", szBuffer };
+            const char* fourthRow[2]                = { "System Type", systemType };
+            const char* sixthRow[2]                 = { "Kernel Version", kernelVersion };
+            const char* languageRow[2]              = { "Language", language };
+            const char* totalRamRow[2]              = { "Total Ram", totalRam };
+            const char* availableRamRow[2]          = { "Availabe Ram", availableRam };
+            const char* totalPageFileRow[2]         = { "Total Page File", totalPageFile };
+            const char* availablePageFileRow[2]     = { "Available Page File", availablePageFile };
+            const char* totalVirtualMemoryRow[2]    = { "Total Virtual Memory", totalVirtualMemory };
+            const char* totalAvailableMemoryRow[2]  = { "Total Available Memory", availableVirtualMemory };
 
             for (int i = 0; i < iColumnsToInsert; ++i)
             {
@@ -248,9 +267,14 @@ LRESULT SystemInfo::SummaryProc(HWND hwndDialog, UINT uMessage, WPARAM wParam, L
                     InsertListViewItems(hListView, 1, i, i == 0 ? 0 : 1, const_cast<char*>(sSecondRow[i]));
                     InsertListViewItems(hListView, 2, i, i == 0 ? 0 : 1, const_cast<char*>(thirdRow[i]));
                     InsertListViewItems(hListView, 3, i, i == 0 ? 0 : 1, const_cast<char*>(fourthRow[i]));
-                    InsertListViewItems(hListView, 4, i, i == 0 ? 0 : 1, const_cast<char*>(fifthRow[i]));
-                    InsertListViewItems(hListView, 5, i, i == 0 ? 0 : 1, const_cast<char*>(sixthRow[i]));
-                    InsertListViewItems(hListView, 6, i, i == 0 ? 0 : 1, const_cast<char*>(languafeRow[i]));
+                    InsertListViewItems(hListView, 4, i, i == 0 ? 0 : 1, const_cast<char*>(sixthRow[i]));
+                    InsertListViewItems(hListView, 5, i, i == 0 ? 0 : 1, const_cast<char*>(languageRow[i]));
+                    InsertListViewItems(hListView, 6, i, i == 0 ? 0 : 1, const_cast<char*>(totalRamRow[i]));
+                    InsertListViewItems(hListView, 7, i, i == 0 ? 0 : 1, const_cast<char*>(availableRamRow[i]));
+                    InsertListViewItems(hListView, 8, i, i == 0 ? 0 : 1, const_cast<char*>(totalPageFileRow[i]));
+                    InsertListViewItems(hListView, 9, i, i == 0 ? 0 : 1, const_cast<char*>(availablePageFileRow[i]));
+                    InsertListViewItems(hListView, 10, i, i == 0 ? 0 : 1, const_cast<char*>(totalVirtualMemoryRow[i]));
+                    InsertListViewItems(hListView, 11, i, i == 0 ? 0 : 1, const_cast<char*>(totalAvailableMemoryRow[i]));
                 }
             }
 
@@ -538,16 +562,6 @@ BOOL SystemInfo::Is64BitWindows()
 #else
     return FALSE; // Win64 does not support Win16
 #endif
-}
-
-DWORDLONG SystemInfo::GetTotalPhysicalMemory()
-{
-    MEMORYSTATUSEX MemoryStatus = { 0 };
-    MemoryStatus.dwLength = sizeof(MemoryStatus);
-
-    GlobalMemoryStatusEx(&MemoryStatus);
-
-    return MemoryStatus.ullTotalPhys / 1073741824;
 }
 
 std::string SystemInfo::GetNtDllVersion()

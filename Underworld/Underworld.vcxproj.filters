@@ -45,6 +45,12 @@
     <ClInclude Include="Graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SysUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Window.cpp">
@@ -72,6 +78,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SysUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
