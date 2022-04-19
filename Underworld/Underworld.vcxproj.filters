@@ -51,6 +51,12 @@
     <ClInclude Include="SysUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CpuStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegisterValues.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Window.cpp">
@@ -84,6 +90,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SysUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CpuStats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegisterValues.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
