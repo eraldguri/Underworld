@@ -1,5 +1,7 @@
 #pragma once
 #include "Win32Settings.h"
+#include "CpuInfo.h"
+#include "RegisterValues.h"
 
 namespace CpuFeatures
 {
@@ -48,13 +50,13 @@ namespace CpuFeatures
 	#define AMD_L2CACHE_FEATURE   0x80000006     // this gets L2 cache info for AMD CPUs
 }
 
-class CCpuStasts
+class CCpuStats
 {
 public:
-	CCpuStasts();
-	CCpuStasts(const CCpuStasts& source);
-	CCpuStasts& operator=(const CCpuStasts& right);
-	virtual ~CCpuStasts();
+	CCpuStats();
+	CCpuStats(const CCpuStats& source);
+	CCpuStats& operator=(const CCpuStats& right);
+	virtual ~CCpuStats();
 
 public:
 	enum ECpuVendors
@@ -66,5 +68,43 @@ public:
 		VENDOR_CENTAUR
 	};
 
-	//friend class CPu
+	friend class CCpuInfo;
+
+public:
+	// Cpu identification
+	virtual bool GetKnowsCpuId() const;
+	virtual void SetKnowsCpuId(const bool& bKnowsCpuId);
+	virtual DWORD GetSignature() const;
+	virtual void SetSignature(const DWORD& dwSignature);
+
+	int GetFamily() const;
+	int GetModel() const;
+	int GetStepping() const;
+
+	std::string GetName() const;
+	void SetName(std::string& name);
+
+	// vendor identification
+	std::string GetVendorId() const;
+	ECpuVendors GetVendor() const;
+
+protected:
+	void Assign(const CCpuStats& source);
+
+private:
+	bool m_bCpuIdSupported;				// Whether opcode CPU_ID is supported -- late 486 and after
+	DWORD m_dwExtendedFeatures;			// AMD CPUs have extended features to test for things like 3dNow!
+	std::string m_vendorIdString;       // Vendor Id in string form
+	std::string m_nameString;           // name string -- either returned by modern CPU's or determined for them
+	ECpuVendors m_eVendor;				// vendor id in enum form
+
+	// Registers from CPUID-1
+	RegisterValues m_cpuIdStats;
+	RegisterValues m_cacheStats;
+	RegisterValues m_cacheStats2;
+
+	static const std::string VENDOR_INTEL_STRING;
+	static const std::string VENDOR_AMD_STRING;
+	static const std::string VENDOR_CYRIX_STRING;
+	static const std::string VENDOR_CENTAUR_STRING;
 };
