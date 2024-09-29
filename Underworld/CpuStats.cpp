@@ -17,6 +17,7 @@ CCpuStats::CCpuStats(const CCpuStats& source)
 CCpuStats& CCpuStats::operator=(const CCpuStats& right)
 {
 	// // O: insert return statement here
+	return NULL;
 }
 
 CCpuStats::~CCpuStats()

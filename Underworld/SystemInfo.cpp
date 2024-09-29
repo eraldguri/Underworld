@@ -11,7 +11,6 @@ constexpr int BUFFER_SIZE = 255;
 HANDLE hLoadingThreads[MAX_NUM_THREADS];
 HANDLE hWatchingThreads = INVALID_HANDLE_VALUE;
 ULONGLONG ullCounter = UINT_MAX;
-CpuInfo::CpuUsage cpuUsage;
 
 char* SystemInfo::GetComputerDetails()
 {

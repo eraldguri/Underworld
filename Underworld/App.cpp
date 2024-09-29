@@ -1,5 +1,4 @@
 #include "App.h"
-#include "SystemInfo.h"
 
 #include <sstream>
 #include <iomanip>

@@ -5,7 +5,6 @@
 #pragma comment (lib, "comctl32")
 
 #include "resource.h"
-#include "SystemInfo.h"
 
 // Enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -106,8 +105,6 @@ LRESULT Window::HandleMessageThunk(HWND hWnd, UINT uMessage, WPARAM wParam, LPAR
 
 LRESULT Window::HandleMessages(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam) noexcept
 {
-	SystemInfo* sysInfo = new SystemInfo();
-
 	Graphics graphics;
 
 	switch (uMessage)
@@ -144,7 +141,6 @@ LRESULT Window::HandleMessages(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM l
 			{
 				case ID_MYCOMPUTER_SYSTEMINFORMATION:
 				{
-					sysInfo->DoPropertySheet(hWnd);
 				} break;
 
 				case ID_TASKS_NEWTASK:

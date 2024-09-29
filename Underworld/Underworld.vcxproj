@@ -143,15 +143,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
-    <ClInclude Include="CpuInfo.h" />
-    <ClInclude Include="CpuStats.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="MemoryInfo.h" />
-    <ClInclude Include="RegisterValues.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SystemInfo.h" />
-    <ClInclude Include="SysUtils.h" />
     <ClInclude Include="TimeWrapper.h" />
     <ClInclude Include="UnderworldException.h" />
     <ClInclude Include="Win32Settings.h" />
@@ -159,14 +153,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="CpuInfo.cpp" />
-    <ClCompile Include="CpuStats.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="MemoryInfo.cpp" />
-    <ClCompile Include="RegisterValues.cpp" />
-    <ClCompile Include="SystemInfo.cpp" />
-    <ClCompile Include="SysUtils.cpp" />
     <ClCompile Include="TimeWrapper.cpp" />
     <ClCompile Include="UnderWorldException.cpp" />
     <ClCompile Include="Window.cpp" />
