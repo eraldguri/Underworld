@@ -145,6 +145,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Panel.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TimeWrapper.h" />
     <ClInclude Include="UnderworldException.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Panel.cpp" />
     <ClCompile Include="TimeWrapper.cpp" />
     <ClCompile Include="UnderWorldException.cpp" />
     <ClCompile Include="Window.cpp" />

@@ -3,6 +3,8 @@
 #include <Prsht.h>
 #include <CommCtrl.h>
 #pragma comment (lib, "comctl32")
+#include "dwmapi.h"
+#pragma comment(lib, "dwmapi")
 
 #include "resource.h"
 
@@ -10,6 +12,7 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include "Graphics.h"
+#include "Panel.h";
 
 Window::WindowClass Window::WindowClass::m_windowClass;
 
@@ -115,24 +118,24 @@ LRESULT Window::HandleMessages(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM l
 			return 0;
 		} break;
 
+		case WM_CREATE:
+		{
+			
+		} break;
+
 		case WM_PAINT:
 		{
-			graphics.InitGdiPlus();
-
 			RECT rect;
 			int windowWidth = 0;
 			int windowHeight = 0;
+			//HRESULT correctRect = DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, &rect, sizeof(rect));
 			if (GetWindowRect(hWnd, &rect))
 			{
 				windowWidth = rect.right - rect.left;
 				windowHeight = rect.bottom - rect.top;
 			}
 
-			PAINTSTRUCT PaintStruct;
-			HDC hDeviceContext = BeginPaint(hWnd, &PaintStruct);
-			graphics.DrawRectangle(hDeviceContext, 0, 0, windowWidth, 50, Gdiplus::Color::AntiqueWhite);
-
-			EndPaint(hWnd, &PaintStruct);
+			CPanel* panel = new CPanel(hWnd, GetModuleHandle(NULL), 0, 0, windowWidth, 50);
 		} break;
 
 		case WM_COMMAND:
